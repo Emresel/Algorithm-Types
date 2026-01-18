@@ -94,43 +94,160 @@ public class assignment1task1partB {
         return matches;
     }
     
-    private static List<CreditCard> generatePart1(int size) {
+    private static int parseExpirationDate(String expiryDateStr) {
+        if (expiryDateStr == null || expiryDateStr.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            String[] parts = expiryDateStr.split("/");
+            if (parts.length == 2) {
+                int month = Integer.parseInt(parts[0]);
+                int year = Integer.parseInt(parts[1]);
+                return year * 100 + month;
+            }
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+    
+    private static int parsePIN(String pinStr) {
+        if (pinStr == null || pinStr.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(pinStr.trim());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    
+    private static String extractLast4(String cardNumber) {
+        String cleaned = cardNumber.replace("-", "").replace("*", "").replace(" ", "");
+        if (cleaned.length() >= 4) {
+            return cleaned.substring(cleaned.length() - 4);
+        }
+        return "";
+    }
+    
+    private static List<CreditCard> loadFromCSV(String filename, boolean hasExpiryAndPIN) {
         List<CreditCard> cards = new ArrayList<>();
-        
-        int currentExpDate = 202400;
-        int currentPin = 1000;
-        
-        for (int i = 0; i < size; i++) {
-            String cardNumber = "4532" + String.format("%012d", i);
+        try {
+            java.io.BufferedReader reader = new java.io.BufferedReader(
+                new java.io.FileReader(filename));
             
-            if (i > 0 && i % 100 == 0) {
-                currentExpDate++;
-                if (currentExpDate % 100 > 12) {
-                    currentExpDate = (currentExpDate / 100 + 1) * 100 + 1;
+            String line = reader.readLine();
+            if (line == null || !line.contains("Credit Card Number")) {
+                reader.close();
+                return cards;
+            }
+            
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                
+                String[] parts = line.split(",");
+                if (parts.length < 1) continue;
+                
+                String cardNumber = parts[0].trim();
+                
+                if (hasExpiryAndPIN && parts.length >= 4) {
+                    String expiryDateStr = parts[1].trim();
+                    String pinStr = parts[3].trim();
+                    
+                    int expirationDate = parseExpirationDate(expiryDateStr);
+                    int pin = parsePIN(pinStr);
+                    
+                    if (expirationDate > 0 && pin > 0) {
+                        cards.add(new CreditCard(cardNumber, expirationDate, pin));
+                    }
+                } else if (!hasExpiryAndPIN) {
+                    cards.add(new CreditCard(cardNumber, 0, 0));
                 }
             }
             
-            if (i > 0 && i % 10 == 0) {
-                currentPin++;
+            reader.close();
+        } catch (java.io.IOException e) {
+            System.err.println("Error reading CSV file " + filename + ": " + e.getMessage());
+        }
+        return cards;
+    }
+    
+    private static List<CreditCard> loadFromCSV(String filename) {
+        return loadFromCSV(filename, true);
+    }
+    
+    private static List<CreditCard> generatePart1(int size) {
+        List<CreditCard> cards = new ArrayList<>();
+        
+        List<CreditCard> part2Cards = loadFromCSV("carddump2.csv", true);
+        Map<String, List<CreditCard>> part2Map = new HashMap<>();
+        for (CreditCard card : part2Cards) {
+            String last4 = extractLast4(card.cardNumber);
+            if (!last4.isEmpty()) {
+                part2Map.computeIfAbsent(last4, k -> new ArrayList<>()).add(card);
+            }
+        }
+        
+        List<CreditCard> part1Raw = loadFromCSV("carddump1.csv", false);
+        
+        if (!part1Raw.isEmpty() && !part2Map.isEmpty()) {
+            for (CreditCard card1 : part1Raw) {
+                String last4 = extractLast4(card1.cardNumber);
+                List<CreditCard> matched = part2Map.get(last4);
+                if (matched != null && !matched.isEmpty()) {
+                    CreditCard matchedCard = matched.remove(0);
+                    cards.add(new CreditCard(card1.cardNumber, matchedCard.expirationDate, matchedCard.pin));
+                }
             }
             
-            cards.add(new CreditCard(cardNumber, currentExpDate, currentPin));
+            cards.sort((a, b) -> {
+                if (a.expirationDate != b.expirationDate) {
+                    return Integer.compare(a.expirationDate, b.expirationDate);
+                }
+                return Integer.compare(a.pin, b.pin);
+            });
+        }
+        
+        if (cards.isEmpty()) {
+            int currentExpDate = 202400;
+            int currentPin = 1000;
+            
+            for (int i = 0; i < size; i++) {
+                String cardNumber = "4532" + String.format("%012d", i);
+                
+                if (i > 0 && i % 100 == 0) {
+                    currentExpDate++;
+                    if (currentExpDate % 100 > 12) {
+                        currentExpDate = (currentExpDate / 100 + 1) * 100 + 1;
+                    }
+                }
+                
+                if (i > 0 && i % 10 == 0) {
+                    currentPin++;
+                }
+                
+                cards.add(new CreditCard(cardNumber, currentExpDate, currentPin));
+            }
         }
         
         return cards;
     }
     
     private static List<CreditCard> generatePart2(List<CreditCard> part1) {
-        List<CreditCard> part2 = new ArrayList<>();
-        Random random = ThreadLocalRandom.current();
+        List<CreditCard> part2 = loadFromCSV("carddump2.csv", true);
         
-        for (int i = 0; i < part1.size(); i++) {
-            CreditCard original = part1.get(i);
-            String newCardNumber = "5678" + String.format("%012d", i);
-            part2.add(new CreditCard(newCardNumber, original.expirationDate, original.pin));
+        if (part2.isEmpty()) {
+            Random random = ThreadLocalRandom.current();
+            
+            for (int i = 0; i < part1.size(); i++) {
+                CreditCard original = part1.get(i);
+                String newCardNumber = "5678" + String.format("%012d", i);
+                part2.add(new CreditCard(newCardNumber, original.expirationDate, original.pin));
+            }
+            
+            Collections.shuffle(part2, random);
+        } else {
+            Collections.shuffle(part2, new Random());
         }
-        
-        Collections.shuffle(part2, random);
         
         return part2;
     }
@@ -158,6 +275,20 @@ public class assignment1task1partB {
         System.out.println("=".repeat(80));
         System.out.println();
         
+        System.out.println("Loading data from CSV files...");
+        List<CreditCard> part1 = generatePart1(0);
+        List<CreditCard> part2 = generatePart2(part1);
+        
+        System.out.println("Part 1 loaded: " + part1.size() + " records");
+        System.out.println("Part 2 loaded: " + part2.size() + " records");
+        System.out.println();
+        
+        if (part1.isEmpty() || part2.isEmpty()) {
+            System.out.println("Warning: CSV files not found or empty. Using generated data.");
+            part1 = generatePart1(20000);
+            part2 = generatePart2(part1);
+        }
+        
         int[] sizes = {100, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000};
         
         System.out.printf("%-12s %-20s %-20s %-15s\n", 
@@ -168,15 +299,17 @@ public class assignment1task1partB {
         int runs = 5;
         
         for (int size : sizes) {
+            if (size > part1.size()) break;
+            
             long linearTotal = 0;
             long logLinearTotal = 0;
             
             for (int run = 0; run < runs; run++) {
-                List<CreditCard> part1 = generatePart1(size);
-                List<CreditCard> part2 = generatePart2(part1);
+                List<CreditCard> part1Subset = new ArrayList<>(part1.subList(0, Math.min(size, part1.size())));
+                List<CreditCard> part2Subset = new ArrayList<>(part2.subList(0, Math.min(size, part2.size())));
                 
-                List<CreditCard> part1Copy1 = new ArrayList<>(part1);
-                List<CreditCard> part2Copy1 = new ArrayList<>(part2);
+                List<CreditCard> part1Copy1 = new ArrayList<>(part1Subset);
+                List<CreditCard> part2Copy1 = new ArrayList<>(part2Subset);
                 long linearTime = measureTime(() -> {
                     List<CreditCard[]> matches = matchLinear(part1Copy1, part2Copy1);
                     if (!verifyMatches(matches)) {
@@ -185,8 +318,8 @@ public class assignment1task1partB {
                 });
                 linearTotal += linearTime;
                 
-                List<CreditCard> part1Copy2 = new ArrayList<>(part1);
-                List<CreditCard> part2Copy2 = new ArrayList<>(part2);
+                List<CreditCard> part1Copy2 = new ArrayList<>(part1Subset);
+                List<CreditCard> part2Copy2 = new ArrayList<>(part2Subset);
                 long logLinearTime = measureTime(() -> {
                     List<CreditCard[]> matches = matchLogLinear(part1Copy2, part2Copy2);
                     if (!verifyMatches(matches)) {
@@ -226,21 +359,18 @@ public class assignment1task1partB {
         System.out.println("=".repeat(80));
         
         System.out.println();
-        System.out.println("DETAILED ANALYSIS FOR 20,000 RECORDS:");
+        System.out.println("DETAILED ANALYSIS FOR " + part1.size() + " RECORDS (from CSV):");
         System.out.println("-".repeat(80));
         
-        List<CreditCard> part1_20k = generatePart1(20000);
-        List<CreditCard> part2_20k = generatePart2(part1_20k);
-        
-        List<CreditCard> part1CopyLinear = new ArrayList<>(part1_20k);
-        List<CreditCard> part2CopyLinear = new ArrayList<>(part2_20k);
+        List<CreditCard> part1CopyLinear = new ArrayList<>(part1);
+        List<CreditCard> part2CopyLinear = new ArrayList<>(part2);
         long linearTime = measureTime(() -> {
             List<CreditCard[]> matches = matchLinear(part1CopyLinear, part2CopyLinear);
             System.out.println("Linear matches found: " + matches.size());
         });
         
-        List<CreditCard> part1CopyLogLinear = new ArrayList<>(part1_20k);
-        List<CreditCard> part2CopyLogLinear = new ArrayList<>(part2_20k);
+        List<CreditCard> part1CopyLogLinear = new ArrayList<>(part1);
+        List<CreditCard> part2CopyLogLinear = new ArrayList<>(part2);
         long logLinearTime = measureTime(() -> {
             List<CreditCard[]> matches = matchLogLinear(part1CopyLogLinear, part2CopyLogLinear);
             System.out.println("Log-Linear matches found: " + matches.size());
@@ -252,7 +382,7 @@ public class assignment1task1partB {
         System.out.println();
         
         double speedup = (double) logLinearTime / linearTime;
-        System.out.printf("Linear algorithm is %.2fx faster for 20,000 records\n", speedup);
+        System.out.printf("Linear algorithm is %.2fx faster for %d records\n", speedup, part1.size());
     }
     
     private static String formatTime(long nanoseconds) {
