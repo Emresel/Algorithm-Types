@@ -59,8 +59,6 @@
 - **Merge Sort**: Log-linear curve (O(n log n)) - time increases nearly linearly with logarithmic factor
 - **Quick Sort**: Log-linear for average case, quadratic for worst case
 
-![Sorting Algorithms Performance](sorting_performance.png)
-
 ---
 
 ### Task 1 Part B: Credit Card Matching
@@ -174,8 +172,6 @@ Empirically analyzed relationship between number of pivots and sorting time for 
 - **Time vs Pivot Count**: Linear relationship
 - **Pivots per Size**: Constant ratio for random inputs
 
-![Quick Sort Pivot Analysis](pivot_analysis.png)
-
 ---
 
 ## Assignment II: Tree Museum
@@ -247,10 +243,6 @@ Empirically analyzed relationship between number of pivots and sorting time for 
   - Binary Best-Case: Logarithmic (O(log n))
   - AVL: Logarithmic (O(log n)) guaranteed
 
-![Tree Performance Comparison](tree_performance.png)
-
-![Tree Removal Performance](tree_removal_performance.png)
-
 ---
 
 ## Data Sets
@@ -296,23 +288,36 @@ All empirical results align with theoretical complexity analysis:
 
 ## Graphs
 
-**IMPORTANT**: All graphs shown above are OBLIGATORY and included in this report. They have been generated from CSV data files using Python/Matplotlib.
+**IMPORTANT**: The following graphs are OBLIGATORY and must be included in the PDF/DOCX report submission.
 
-### Graph Generation
+### Generating Graphs
 
-Graphs were generated using the provided Python script:
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run script: `python generate_graphs.py`
-3. Generated PNG files are embedded in the report above
+1. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Graph Requirements (All Met)
+2. **Run the graph generation script:**
+   ```bash
+   python generate_graphs.py
+   ```
 
-Each graph clearly shows:
-- X-axis: Input size (logarithmic scale where appropriate)
-- Y-axis: Execution time or relevant metric
+3. **Generated graphs:**
+   - `sorting_performance.png` - Sorting algorithms comparison
+   - `pivot_analysis.png` - Quick Sort pivot count analysis  
+   - `tree_performance.png` - Tree insertion and height comparison
+   - `tree_removal_performance.png` - Tree removal performance
+
+4. **Include in report:** Add these PNG files to your PDF/DOCX report.
+
+### Graph Requirements
+
+Each graph should clearly show:
+- X-axis: Input size
+- Y-axis: Execution time (or relevant metric)
 - Multiple series for algorithm comparison
+- Logarithmic scales where appropriate for better visualization
 - Clear legends and labels
-- Logarithmic scales for better visualization of exponential growth
 
 ---
 
