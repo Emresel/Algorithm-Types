@@ -288,8 +288,47 @@ All empirical results align with theoretical complexity analysis:
 
 ## Graphs
 
-*Note: Graphs should be generated from CSV files using Python/Excel/MATLAB and included in the report. Each graph should clearly show:*
+**IMPORTANT**: The following graphs are OBLIGATORY and must be included in the PDF/DOCX report submission.
+
+### Generating Graphs
+
+1. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Run the graph generation script:**
+   ```bash
+   python generate_graphs.py
+   ```
+
+3. **Generated graphs:**
+   - `sorting_performance.png` - Sorting algorithms comparison
+   - `pivot_analysis.png` - Quick Sort pivot count analysis  
+   - `tree_performance.png` - Tree insertion and height comparison
+   - `tree_removal_performance.png` - Tree removal performance
+
+4. **Include in report:** Add these PNG files to your PDF/DOCX report.
+
+### Graph Requirements
+
+Each graph should clearly show:
 - X-axis: Input size
-- Y-axis: Execution time
+- Y-axis: Execution time (or relevant metric)
 - Multiple series for algorithm comparison
 - Logarithmic scales where appropriate for better visualization
+- Clear legends and labels
+
+---
+
+## Report Submission Format
+
+**For Moodle submission, convert README.md to PDF/DOCX:**
+- Option 1: Use Pandoc: `pandoc README.md -o REPORT.pdf`
+- Option 2: Copy content to Word, add graphs, export as PDF
+- Option 3: Use online Markdown to PDF converters
+
+**Required files for submission:**
+- PDF/DOCX report (with graphs embedded)
+- All CSV data files (sorting_results.csv, pivot_analysis.csv, tree_insertion_results.csv, tree_removal_results.csv)
+- All Java source files
