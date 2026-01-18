@@ -253,9 +253,9 @@ Empirically analyzed relationship between number of pivots and sorting time for 
 
 ---
 
-## Data Sets
+## Data Files
 
-All data sets are included as CSV files:
+The performance measurements are stored in CSV files:
 - `sorting_results.csv`: Sorting algorithm performance data
 - `pivot_analysis.csv`: Quick Sort pivot count analysis
 - `tree_insertion_results.csv`: Tree insertion performance data
@@ -296,34 +296,32 @@ All empirical results align with theoretical complexity analysis:
 
 ## Graphs
 
-**IMPORTANT**: All graphs shown above are OBLIGATORY and included in this report. They have been generated from CSV data files using Python/Matplotlib.
+The graphs included in this report were generated from the CSV data files using a Python script with Matplotlib. The script reads the CSV files produced by the Java programs and creates visualizations showing the performance comparisons.
 
-### Graph Generation
+To regenerate the graphs, run:
+```bash
+pip install -r requirements.txt
+python generate_graphs.py
+```
 
-Graphs were generated using the provided Python script:
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run script: `python generate_graphs.py`
-3. Generated PNG files are embedded in the report above
-
-### Graph Requirements (All Met)
-
-Each graph clearly shows:
-- X-axis: Input size (logarithmic scale where appropriate)
-- Y-axis: Execution time or relevant metric
-- Multiple series for algorithm comparison
-- Clear legends and labels
-- Logarithmic scales for better visualization of exponential growth
+The graphs visualize:
+- X-axis: Input size (using logarithmic scale for better readability)
+- Y-axis: Execution time in milliseconds
+- Multiple algorithm/tree implementations for comparison
+- Clear legends distinguishing different approaches
 
 ---
 
-## Report Submission Format
+## Implementation Details
 
-**For Moodle submission, convert README.md to PDF/DOCX:**
-- Option 1: Use Pandoc: `pandoc README.md -o REPORT.pdf`
-- Option 2: Copy content to Word, add graphs, export as PDF
-- Option 3: Use online Markdown to PDF converters
+- **Language**: Java
+- **Framework**: Standard Java libraries (java.util.*)
+- **Measurement**: System.nanoTime() for high-precision timing
+- **Averaging**: Multiple runs (5-100 depending on task) for statistical accuracy
+- **Data Format**: CSV files for easy visualization
 
-**Required files for submission:**
-- PDF/DOCX report (with graphs embedded)
-- All CSV data files (sorting_results.csv, pivot_analysis.csv, tree_insertion_results.csv, tree_removal_results.csv)
-- All Java source files
+The complete project includes:
+- All Java source files for the assignments
+- CSV data files with performance measurements
+- Python script for graph generation
+- Generated graphs embedded in this report
