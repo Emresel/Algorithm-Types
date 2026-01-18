@@ -28,10 +28,10 @@ def plot_sorting_results():
         
         plt.tight_layout()
         plt.savefig('sorting_performance.png', dpi=300, bbox_inches='tight')
-        print("[OK] Generated sorting_performance.png")
+        print("✓ Generated sorting_performance.png")
         plt.close()
     except Exception as e:
-        print(f"[ERROR] Error plotting sorting results: {e}")
+        print(f"✗ Error plotting sorting results: {e}")
 
 def plot_pivot_analysis():
     """Plot Quick Sort pivot analysis"""
@@ -82,10 +82,10 @@ def plot_pivot_analysis():
         
         plt.tight_layout()
         plt.savefig('pivot_analysis.png', dpi=300, bbox_inches='tight')
-        print("[OK] Generated pivot_analysis.png")
+        print("✓ Generated pivot_analysis.png")
         plt.close()
     except Exception as e:
-        print(f"[ERROR] Error plotting pivot analysis: {e}")
+        print(f"✗ Error plotting pivot analysis: {e}")
 
 def plot_tree_insertion():
     """Plot tree insertion performance"""
@@ -126,10 +126,10 @@ def plot_tree_insertion():
         
         plt.tight_layout()
         plt.savefig('tree_performance.png', dpi=300, bbox_inches='tight')
-        print("[OK] Generated tree_performance.png")
+        print("✓ Generated tree_performance.png")
         plt.close()
     except Exception as e:
-        print(f"[ERROR] Error plotting tree performance: {e}")
+        print(f"✗ Error plotting tree performance: {e}")
 
 def plot_tree_removal():
     """Plot tree removal performance"""
@@ -138,8 +138,8 @@ def plot_tree_removal():
         
         fig, ax = plt.subplots(figsize=(12, 8))
         
-        for tree_type in df['Method'].unique():
-            tree_data = df[df['Method'] == tree_type]
+        for tree_type in df['TreeType'].unique():
+            tree_data = df[df['TreeType'] == tree_type]
             grouped = tree_data.groupby('Size').agg({
                 'Time(ns)': 'mean'
             }).reset_index()
@@ -157,32 +157,32 @@ def plot_tree_removal():
         
         plt.tight_layout()
         plt.savefig('tree_removal_performance.png', dpi=300, bbox_inches='tight')
-        print("[OK] Generated tree_removal_performance.png")
+        print("✓ Generated tree_removal_performance.png")
         plt.close()
     except Exception as e:
-        print(f"[ERROR] Error plotting tree removal: {e}")
+        print(f"✗ Error plotting tree removal: {e}")
 
 if __name__ == "__main__":
     print("Generating graphs from CSV files...")
     print("=" * 50)
     
     if not os.path.exists('sorting_results.csv'):
-        print("[WARNING] sorting_results.csv not found. Run assignment1task1partA.java first.")
+        print("⚠ Warning: sorting_results.csv not found. Run assignment1task1partA.java first.")
     else:
         plot_sorting_results()
     
     if not os.path.exists('pivot_analysis.csv'):
-        print("[WARNING] pivot_analysis.csv not found. Run assignment1task3.java first.")
+        print("⚠ Warning: pivot_analysis.csv not found. Run assignment1task3.java first.")
     else:
         plot_pivot_analysis()
     
     if not os.path.exists('tree_insertion_results.csv'):
-        print("[WARNING] tree_insertion_results.csv not found. Run assignment2task1and2and3.java first.")
+        print("⚠ Warning: tree_insertion_results.csv not found. Run assignment2task1and2and3.java first.")
     else:
         plot_tree_insertion()
     
     if not os.path.exists('tree_removal_results.csv'):
-        print("[WARNING] tree_removal_results.csv not found. Run assignment2task1and2and3.java first.")
+        print("⚠ Warning: tree_removal_results.csv not found. Run assignment2task1and2and3.java first.")
     else:
         plot_tree_removal()
     

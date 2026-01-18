@@ -171,10 +171,6 @@ public class assignment1task1partB {
         return cards;
     }
     
-    private static List<CreditCard> loadFromCSV(String filename) {
-        return loadFromCSV(filename, true);
-    }
-    
     private static List<CreditCard> generatePart1(int size) {
         List<CreditCard> cards = new ArrayList<>();
         
